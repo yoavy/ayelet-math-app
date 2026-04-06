@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import '@fontsource/rubik/400.css';
+@import '@fontsource/rubik/600.css';
+@import '@fontsource/rubik/700.css';
+
+:root {
+  --font-main: 'Rubik', 'Segoe UI', Arial, sans-serif;
+}
+
+* {
+  font-family: var(--font-main);
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  direction: rtl;
+  background-color: #fdf4ff;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
