@@ -120,7 +120,7 @@ export function useTheme(): Theme {
     learnButtonLabel: 'למדי את הנושא',
     learnButtonSubtitle: 'לפני שמשחקים — תלמדי את החומר',
     learnUnderstoodBtn: 'הבנתי! ←',
-    learnNextSlideBtn: 'הבאה ←',
+    learnNextSlideBtn: 'הבא ←',
     learnPlayNowBtn: 'בואי נשחק! 🎮',
     learnSlideCompleteTitle: 'כל הכבוד! 🌟',
     learnAllDoneTitle: 'סיימת את שיעור הלמידה! 🎉',

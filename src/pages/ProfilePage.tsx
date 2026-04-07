@@ -25,10 +25,27 @@ export function ProfilePage() {
     fox: '🦊', rainbow: '🌈', rocket: '🚀', crown: '👑',
   }
 
-  // Display next title with correct gender
   const nextTitleName = nextTitle
     ? (theme.isMale && nextTitle.nameHebrewMale ? nextTitle.nameHebrewMale : nextTitle.nameHebrew)
     : null
+
+  function handleShareBadges() {
+    const earned = BADGES.filter(b => profile.badgeIds.includes(b.id))
+    if (earned.length === 0) return
+    const list = earned
+      .map(b => `${b.emoji} ${theme.isMale && b.nameHebrewMale ? b.nameHebrewMale : b.nameHebrew}`)
+      .join('\n')
+    const text = `התגים שלי במתמטיקיות על 🏆\n\n${list}\n\nסה"כ ${earned.length} תגים!`
+    if (navigator.share) {
+      navigator.share({ text }).catch(() => {/* user cancelled */})
+    } else {
+      navigator.clipboard?.writeText(text)
+        .then(() => alert('הטקסט הועתק ללוח!'))
+        .catch(() => {/* clipboard unavailable */})
+    }
+  }
+
+  const earnedCount = profile.badgeIds.length
 
   return (
     <div className="flex-1 pb-24 px-4 pt-4 max-w-lg mx-auto w-full">
@@ -101,7 +118,27 @@ export function ProfilePage() {
 
       {/* Badges */}
       <div className={`bg-white rounded-3xl p-4 shadow-sm border ${theme.borderColor}`}>
-        <h3 className="font-bold text-gray-700 mb-3">תגים שלי</h3>
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-gray-700">התגים שלי</h3>
+            {earnedCount > 0 && (
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${theme.chipBg} ${theme.chipText}`}>
+                {earnedCount}
+              </span>
+            )}
+          </div>
+          {earnedCount > 0 && (
+            <button
+              onClick={handleShareBadges}
+              className={`flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full
+                          bg-gradient-to-r ${theme.gradient} text-white shadow-sm active:scale-95 transition-transform`}
+            >
+              {theme.shareLabel} 🏅
+            </button>
+          )}
+        </div>
+
         <div className="grid grid-cols-4 gap-3">
           {BADGES.map(badge => {
             const earned = profile.badgeIds.includes(badge.id)

@@ -116,14 +116,14 @@ export function HomePage() {
                 )}
               </button>
 
-              {/* 📚 Learn shortcut button */}
-              {unlocked && hasLearn && (
+              {/* 📚 Learn shortcut button — available for ALL topics, even locked */}
+              {hasLearn && (
                 <button
                   onClick={e => {
                     e.stopPropagation()
                     navigate(`/learn/${topic.id}`, { state: { fromHome: true } })
                   }}
-                  className="absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/60 hover:bg-white/90 active:scale-90 transition-all text-base shadow-sm"
+                  className="absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/70 hover:bg-white/95 active:scale-90 transition-all text-base shadow-sm z-20"
                   title="שיעור"
                   aria-label="פתח שיעור"
                 >

@@ -5,6 +5,7 @@ import { TOPICS } from '../data/topics'
 import { LEARN_CONTENT } from '../data/learnContent'
 import { useLearnSession } from '../hooks/useLearnSession'
 import { useTheme } from '../hooks/useTheme'
+import { useTopicProgress } from '../hooks/useTopicProgress'
 import type { LearnSlide, LearnValidationQuestion } from '../types'
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -137,7 +138,6 @@ function QuestionPanel({
       transition={{ duration: 0.28 }}
       className="flex flex-col flex-1"
     >
-      {/* Question prompt */}
       <div className={`rounded-2xl p-5 border-2 ${theme.borderColorMd} bg-white shadow-sm mb-4`}>
         <p className="font-bold text-lg text-right text-gray-800">
           🤔 {gTransform(question.prompt)}
@@ -152,7 +152,6 @@ function QuestionPanel({
         )}
       </div>
 
-      {/* Wrong answer feedback */}
       <AnimatePresence>
         {wrongAttempts > 0 && (
           <motion.div
@@ -167,7 +166,6 @@ function QuestionPanel({
         )}
       </AnimatePresence>
 
-      {/* Hint after 2 wrong attempts */}
       <AnimatePresence>
         {showHint && question.hintText && (
           <motion.div
@@ -180,7 +178,6 @@ function QuestionPanel({
         )}
       </AnimatePresence>
 
-      {/* Answer input */}
       {question.type === 'multiple_choice' && question.choices ? (
         <div className="grid grid-cols-2 gap-3 mt-2">
           {question.choices.map(choice => (
@@ -262,12 +259,14 @@ function AllDonePanel({
   playLabel,
   title,
   showBackToTopics,
+  topicLocked,
 }: {
   onPlay: () => void
   onBackToTopics: () => void
   playLabel: string
   title: string
   showBackToTopics: boolean
+  topicLocked: boolean
 }) {
   const theme = useTheme()
   return (
@@ -281,13 +280,29 @@ function AllDonePanel({
     >
       <div className="text-7xl">🎉</div>
       <p className={`text-2xl font-bold text-center ${theme.textPrimary}`}>{title}</p>
-      <p className="text-gray-500 text-center text-sm">עכשיו אפשר לפרוץ לשלבים!</p>
-      <button
-        onClick={onPlay}
-        className={`w-full py-5 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform bg-gradient-to-r ${theme.gradient} text-white mt-2`}
-      >
-        {playLabel}
-      </button>
+
+      {topicLocked ? (
+        /* Topic is still locked — can't play yet */
+        <div className="w-full flex flex-col gap-3">
+          <div className="w-full py-4 rounded-2xl text-center bg-gray-100 text-gray-400 font-semibold text-base border-2 border-gray-200">
+            🔒 הנושא עדיין נעול
+          </div>
+          <p className="text-xs text-gray-400 text-center">
+            השלימי את הנושאים הקודמים כדי לפתוח נושא זה
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="text-gray-500 text-center text-sm">עכשיו אפשר לפרוץ לשלבים!</p>
+          <button
+            onClick={onPlay}
+            className={`w-full py-5 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform bg-gradient-to-r ${theme.gradient} text-white mt-2`}
+          >
+            {playLabel}
+          </button>
+        </>
+      )}
+
       {showBackToTopics && (
         <button
           onClick={onBackToTopics}
@@ -307,12 +322,14 @@ export function LearnPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme()
+  const { isTopicUnlocked } = useTopicProgress()
 
-  // Was this page opened from the home/topic-list page directly?
   const fromHome = (location.state as { fromHome?: boolean } | null)?.fromHome === true
 
   const topic = TOPICS.find(t => t.id === topicId)
+  const topicIndex = TOPICS.findIndex(t => t.id === topicId)
   const content = topicId ? LEARN_CONTENT[topicId as keyof typeof LEARN_CONTENT] : undefined
+  const topicLocked = !isTopicUnlocked(topicId as Parameters<typeof isTopicUnlocked>[0], topicIndex)
 
   const session = useLearnSession(content!)
 
@@ -333,20 +350,19 @@ export function LearnPage() {
         className={`bg-gradient-to-r ${theme.gradient} text-white px-4 pb-4 flex items-center gap-3`}
         style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
       >
-        {/* Exit button — 🚪 door icon clearly signals "leave this lesson" */}
+        {/* Exit button — clear text label */}
         <button
           onClick={() => navigate(fromHome ? '/' : `/topic/${topicId}`)}
-          className="text-white/90 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors flex-shrink-0"
+          className="bg-white/20 hover:bg-white/30 text-white font-semibold text-sm px-3 py-1.5 rounded-full active:scale-95 transition-all flex-shrink-0"
           aria-label="יציאה מהשיעור"
-          title="יציאה מהשיעור"
         >
-          🚪
+          יציאה
         </button>
         <div className="flex-1 text-center">
           <p className="font-bold text-lg leading-tight">{topic.emoji} {topic.nameHebrew}</p>
           <p className="text-white/80 text-xs">{theme.g(content.subtitleHebrew)}</p>
         </div>
-        <div className="w-10 h-10 flex items-center justify-center text-white/70 text-sm font-medium">
+        <div className="w-14 h-7 flex items-center justify-center text-white/70 text-sm font-medium">
           {session.slideIndex + 1}/{session.totalSlides}
         </div>
       </div>
@@ -411,6 +427,7 @@ export function LearnPage() {
               playLabel={theme.learnPlayNowBtn}
               title={theme.learnAllDoneTitle}
               showBackToTopics={fromHome}
+              topicLocked={topicLocked}
             />
           )}
         </AnimatePresence>
