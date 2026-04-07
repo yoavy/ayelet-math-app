@@ -4,6 +4,7 @@ import { calculatePoints, calculateStars } from '../engine/sessionScorer'
 import { checkBadgeConditions } from '../engine/badgeChecker'
 import { resolveTitle } from '../data/titles'
 import { BADGES } from '../data/badges'
+import { isAnswerCorrect } from '../engine/answerChecker'
 
 export const initialState: AppState = {
   userProfile: null,
@@ -207,16 +208,6 @@ export function reducer(state: AppState, action: AppAction): AppState {
     default:
       return state
   }
-}
-
-function isAnswerCorrect(correct: string, given: string): boolean {
-  const c = correct.trim().replace(',', '.')
-  const g = given.trim().replace(',', '.')
-  if (c === g) return true
-  const cn = parseFloat(c)
-  const gn = parseFloat(g)
-  if (!isNaN(cn) && !isNaN(gn)) return Math.abs(cn - gn) < 0.001
-  return false
 }
 
 function getMultiplier(streak: number): number {

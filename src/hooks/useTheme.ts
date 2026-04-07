@@ -35,6 +35,15 @@ export interface Theme {
   genderSubtitle: string
   fractionHint: string
   inputPlaceholder: string
+  // Learn stage strings
+  learnButtonLabel: string
+  learnButtonSubtitle: string
+  learnUnderstoodBtn: string
+  learnNextSlideBtn: string
+  learnPlayNowBtn: string
+  learnSlideCompleteTitle: string
+  learnAllDoneTitle: string
+  learnWrongAnswer: string
   // Gendered text transformer
   g: (text: string) => string
 }
@@ -70,6 +79,14 @@ export function useTheme(): Theme {
       genderSubtitle: 'אתה עומד להפוך לגיבור המתמטיקה!',
       fractionHint: 'לשבר: הקלד מונה/מכנה (למשל 3/4)',
       inputPlaceholder: 'הקלד תשובה...',
+      learnButtonLabel: 'למד את הנושא',
+      learnButtonSubtitle: 'לפני שמשחקים — תלמד את החומר',
+      learnUnderstoodBtn: 'הבנתי! ←',
+      learnNextSlideBtn: 'הבא ←',
+      learnPlayNowBtn: 'בוא נשחק! 🎮',
+      learnSlideCompleteTitle: 'כל הכבוד! 🌟',
+      learnAllDoneTitle: 'סיימת את שיעור הלמידה! 🎉',
+      learnWrongAnswer: 'לא בדיוק, נסה שוב 💪',
       g: toMaleHebrew,
     }
   }
@@ -100,6 +117,14 @@ export function useTheme(): Theme {
     genderSubtitle: 'את עומדת להפוך לגיבורת המתמטיקה!',
     fractionHint: 'לשבר: הקלידי מונה/מכנה (למשל 3/4)',
     inputPlaceholder: 'הקלידי תשובה...',
+    learnButtonLabel: 'למדי את הנושא',
+    learnButtonSubtitle: 'לפני שמשחקים — תלמדי את החומר',
+    learnUnderstoodBtn: 'הבנתי! ←',
+    learnNextSlideBtn: 'הבאה ←',
+    learnPlayNowBtn: 'בואי נשחק! 🎮',
+    learnSlideCompleteTitle: 'כל הכבוד! 🌟',
+    learnAllDoneTitle: 'סיימת את שיעור הלמידה! 🎉',
+    learnWrongAnswer: 'לא בדיוק, נסי שוב 💪',
     g: (text) => text,
   }
 }

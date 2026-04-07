@@ -203,6 +203,45 @@ export interface WeeklyReport {
   }[]
 }
 
+// ─── Learn Stage ──────────────────────────────────────────────────────────────
+
+export interface LearnChoice {
+  id: string
+  label: string
+  value: string | number
+}
+
+export interface LearnValidationQuestion {
+  /** Question prompt (Hebrew, female form — transformed via theme.g() at render time) */
+  prompt: string
+  /** Optional LTR math expression displayed below the prompt */
+  expression?: string
+  /** The correct answer */
+  answer: string | number
+  type: 'numeric_input' | 'multiple_choice'
+  choices?: LearnChoice[]
+  /** Shown after 2 wrong attempts */
+  hintText?: string
+}
+
+export interface LearnSlide {
+  id: string
+  /** Explanation text (Hebrew, female form — transformed via theme.g() at render time) */
+  explanationHebrew: string
+  /** Visual example content (emoji string, math expression, or descriptive text) */
+  visualExample?: string
+  /** How to render the visual example */
+  visualType?: 'expression' | 'text' | 'emoji_grid'
+  validationQuestions: LearnValidationQuestion[]
+}
+
+export interface TopicLearnContent {
+  topicId: TopicId
+  /** Short subtitle shown on the learn page header (Hebrew, female form) */
+  subtitleHebrew: string
+  slides: LearnSlide[]
+}
+
 // ─── App State ────────────────────────────────────────────────────────────────
 
 export interface AppState {
