@@ -392,7 +392,7 @@ const decimals: TopicLearnContent = {
       id: 'dec_1',
       explanationHebrew:
         'מספרים עשרוניים מייצגים שברים בצורה מיוחדת. הנקודה העשרונית מפרידה בין החלק השלם לחלקי השלם. הספרה מיד אחרי הנקודה היא עשיריות, השנייה היא מאיות. לדוגמה: 0.5 = חצי, 0.25 = רבע.',
-      visualExample: '0.75 = 0 שלמים + 7 עשיריות + 5 מאיות\n= 75/100 = 3/4',
+      visualExample: '0.5  = 5/10  = 1/2\n0.25 = 25/100 = 1/4\n0.75 = 75/100 = 3/4',
       visualType: 'expression',
       validationQuestions: [
         {

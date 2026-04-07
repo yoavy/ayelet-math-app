@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useApp } from '../store/AppContext'
 import { TOPICS } from '../data/topics'
+import { LEARN_CONTENT } from '../data/learnContent'
 import { useTopicProgress } from '../hooks/useTopicProgress'
 import { useTheme } from '../hooks/useTheme'
 import { StarRating } from '../components/ui/StarRating'
@@ -80,35 +81,56 @@ export function HomePage() {
           const unlocked = isTopicUnlocked(topic.id, index)
           const stars = getTopicStars(topic.id)
           const maxStars = topic.levels.length * 3
+          const hasLearn = Boolean(LEARN_CONTENT[topic.id as keyof typeof LEARN_CONTENT])
 
           return (
-            <motion.button
+            <motion.div
               key={topic.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.04 }}
-              onClick={() => unlocked && navigate(`/topic/${topic.id}`)}
-              className={`relative rounded-3xl p-4 text-right shadow-sm border-2 transition-all active:scale-95 ${
-                unlocked
-                  ? 'border-transparent hover:shadow-md cursor-pointer'
-                  : 'border-gray-100 opacity-50 cursor-not-allowed'
+              className={`relative rounded-3xl shadow-sm border-2 overflow-hidden ${
+                unlocked ? 'border-transparent' : 'border-gray-100 opacity-50'
               }`}
               style={{ backgroundColor: unlocked ? topic.bgColor : '#f9fafb' }}
             >
               {!unlocked && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-gray-100/60">
+                <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-gray-100/60 z-10">
                   <span className="text-3xl">🔒</span>
                 </div>
               )}
-              <div className="text-3xl mb-2">{topic.emoji}</div>
-              <p className="font-bold text-gray-800 text-sm">{topic.nameHebrew}</p>
-              <div className="mt-1">
-                <StarRating stars={Math.round((stars / maxStars) * 5)} max={5} size="sm" />
-              </div>
-              {stars > 0 && (
-                <p className="text-xs text-gray-500 mt-1">{stars}/{maxStars}</p>
+
+              {/* Main tap area → topic page */}
+              <button
+                onClick={() => unlocked && navigate(`/topic/${topic.id}`)}
+                disabled={!unlocked}
+                className="w-full p-4 text-right active:scale-95 transition-transform cursor-pointer disabled:cursor-not-allowed"
+              >
+                <div className="text-3xl mb-2">{topic.emoji}</div>
+                <p className="font-bold text-gray-800 text-sm">{topic.nameHebrew}</p>
+                <div className="mt-1">
+                  <StarRating stars={Math.round((stars / maxStars) * 5)} max={5} size="sm" />
+                </div>
+                {stars > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">{stars}/{maxStars}</p>
+                )}
+              </button>
+
+              {/* 📚 Learn shortcut button */}
+              {unlocked && hasLearn && (
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    navigate(`/learn/${topic.id}`, { state: { fromHome: true } })
+                  }}
+                  className="absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/60 hover:bg-white/90 active:scale-90 transition-all text-base shadow-sm"
+                  title="שיעור"
+                  aria-label="פתח שיעור"
+                >
+                  📚
+                </button>
               )}
-            </motion.button>
+            </motion.div>
           )
         })}
       </div>

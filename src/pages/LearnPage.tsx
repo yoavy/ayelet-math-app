@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { TOPICS } from '../data/topics'
@@ -84,7 +84,7 @@ function ExplanationPanel({
       className="flex flex-col flex-1"
     >
       <VisualBlock slide={slide} />
-      <p className={`text-gray-700 text-base leading-relaxed text-right mt-2 mb-6`}>
+      <p className="text-gray-700 text-base leading-relaxed text-right mt-2 mb-6">
         {gTransform(slide.explanationHebrew)}
       </p>
       <button
@@ -121,7 +121,6 @@ function QuestionPanel({
 
   const handleChoiceClick = (value: string | number) => {
     onAnswer(value)
-    // If wrong, trigger shake
     setShakeKey(k => k + 1)
   }
 
@@ -140,7 +139,7 @@ function QuestionPanel({
     >
       {/* Question prompt */}
       <div className={`rounded-2xl p-5 border-2 ${theme.borderColorMd} bg-white shadow-sm mb-4`}>
-        <p className={`font-bold text-lg text-right text-gray-800`}>
+        <p className="font-bold text-lg text-right text-gray-800">
           🤔 {gTransform(question.prompt)}
         </p>
         {question.expression && (
@@ -189,7 +188,7 @@ function QuestionPanel({
               key={choice.id}
               onClick={() => handleChoiceClick(choice.value)}
               className={`py-4 rounded-2xl border-2 ${theme.borderColorMd} bg-white text-gray-800 font-bold text-lg
-                         hover:${theme.bgLight} active:scale-95 transition-all shadow-sm`}
+                         active:scale-95 transition-all shadow-sm`}
             >
               {choice.label}
             </button>
@@ -259,12 +258,16 @@ function SlideCompletePanel({
 
 function AllDonePanel({
   onPlay,
+  onBackToTopics,
   playLabel,
   title,
+  showBackToTopics,
 }: {
   onPlay: () => void
+  onBackToTopics: () => void
   playLabel: string
   title: string
+  showBackToTopics: boolean
 }) {
   const theme = useTheme()
   return (
@@ -278,15 +281,21 @@ function AllDonePanel({
     >
       <div className="text-7xl">🎉</div>
       <p className={`text-2xl font-bold text-center ${theme.textPrimary}`}>{title}</p>
-      <p className="text-gray-500 text-center text-sm">
-        עכשיו אפשר לפרוץ לשלבים!
-      </p>
+      <p className="text-gray-500 text-center text-sm">עכשיו אפשר לפרוץ לשלבים!</p>
       <button
         onClick={onPlay}
         className={`w-full py-5 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform bg-gradient-to-r ${theme.gradient} text-white mt-2`}
       >
         {playLabel}
       </button>
+      {showBackToTopics && (
+        <button
+          onClick={onBackToTopics}
+          className="w-full py-3 rounded-2xl font-semibold text-base border-2 border-gray-200 text-gray-500 bg-white active:scale-95 transition-transform"
+        >
+          חזרה לרשימת הנושאים 📚
+        </button>
+      )}
     </motion.div>
   )
 }
@@ -296,7 +305,11 @@ function AllDonePanel({
 export function LearnPage() {
   const { topicId } = useParams<{ topicId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const theme = useTheme()
+
+  // Was this page opened from the home/topic-list page directly?
+  const fromHome = (location.state as { fromHome?: boolean } | null)?.fromHome === true
 
   const topic = TOPICS.find(t => t.id === topicId)
   const content = topicId ? LEARN_CONTENT[topicId as keyof typeof LEARN_CONTENT] : undefined
@@ -310,23 +323,24 @@ export function LearnPage() {
 
   const isLastSlide = session.slideIndex === session.totalSlides - 1
 
-  const handlePlayNow = () => {
-    navigate(`/game/${topicId}/1`)
-  }
+  const handlePlayNow = () => navigate(`/game/${topicId}/1`)
+  const handleBackToTopics = () => navigate('/')
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50" dir="rtl">
       {/* ── Top Bar ── */}
       <div
-        className={`bg-gradient-to-r ${theme.gradient} text-white px-4 pt-safe-top pb-4 flex items-center gap-3`}
+        className={`bg-gradient-to-r ${theme.gradient} text-white px-4 pb-4 flex items-center gap-3`}
         style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
       >
+        {/* Exit button — 🚪 door icon clearly signals "leave this lesson" */}
         <button
-          onClick={() => navigate(`/topic/${topicId}`)}
-          className="text-white/80 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors flex-shrink-0"
-          aria-label="חזרה"
+          onClick={() => navigate(fromHome ? '/' : `/topic/${topicId}`)}
+          className="text-white/90 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors flex-shrink-0"
+          aria-label="יציאה מהשיעור"
+          title="יציאה מהשיעור"
         >
-          ›
+          🚪
         </button>
         <div className="flex-1 text-center">
           <p className="font-bold text-lg leading-tight">{topic.emoji} {topic.nameHebrew}</p>
@@ -393,8 +407,10 @@ export function LearnPage() {
             <AllDonePanel
               key="all_done"
               onPlay={handlePlayNow}
+              onBackToTopics={handleBackToTopics}
               playLabel={theme.learnPlayNowBtn}
               title={theme.learnAllDoneTitle}
+              showBackToTopics={fromHome}
             />
           )}
         </AnimatePresence>
