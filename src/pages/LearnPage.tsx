@@ -412,7 +412,7 @@ export function LearnPage() {
             <SlideCompletePanel
               key={`done_${session.slideIndex}`}
               isLast={isLastSlide}
-              onNext={isLastSlide ? handlePlayNow : session.handleNext}
+              onNext={session.handleNext}
               nextLabel={theme.learnNextSlideBtn}
               playLabel={theme.learnPlayNowBtn}
               title={theme.learnSlideCompleteTitle}

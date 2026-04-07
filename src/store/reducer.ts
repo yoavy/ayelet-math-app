@@ -190,7 +190,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
     case 'ADD_POINTS': {
       if (!state.userProfile) return state
       const newPoints = state.userProfile.totalPoints + action.payload
-      const newTitle = resolveTitle(newPoints).nameHebrew
+      const newTitle = resolveTitle(newPoints, state.userProfile.gender ?? 'female').nameHebrew
       return {
         ...state,
         userProfile: { ...state.userProfile, totalPoints: newPoints, currentTitle: newTitle },

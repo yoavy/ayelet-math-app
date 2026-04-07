@@ -609,7 +609,7 @@ const wordProblems: TopicLearnContent = {
       explanationHebrew:
         'כשפותרים בעיה מילולית, קוראים פעמיים! בקריאה הראשונה מבינים את הסיפור. בשנייה מזהים: מה נתון (המספרים שיש לנו), מה נשאל (מה צריך למצוא), ואיזו פעולה צריך לבצע.',
       visualExample: 'קראי → זהי נתונים → זהי נשאל → פתרי',
-      visualType: 'text',
+      visualType: 'expression',
       validationQuestions: [
         {
           prompt: 'אם בעיה שואלת "כמה נשאר?" — איזו פעולה כנראה נדרשת?',

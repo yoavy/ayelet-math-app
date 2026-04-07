@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useEffect, useRef, type ReactNod
 import type { AppState } from '../types'
 import type { AppAction } from './actions'
 import { reducer, initialState } from './reducer'
+import { resolveTitle } from '../data/titles'
 
 const STORAGE_KEYS = {
   profile: 'ayelet_math_v1_profile',
@@ -12,13 +13,21 @@ const STORAGE_KEYS = {
 
 function loadState(): Partial<AppState> {
   try {
-    const profile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) ?? 'null')
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) ?? 'null')
     // Migrate old profiles that predate gender/difficulty fields
-    const migratedProfile = profile
-      ? { gender: 'female', difficulty: 'medium', ...profile }
-      : null
+    const profile = raw ? { gender: 'female', difficulty: 'medium', ...raw } : null
+
+    // Always re-resolve the title on load so a stale stored title
+    // (e.g. "מתחילה" for a male user) is corrected automatically.
+    if (profile) {
+      profile.currentTitle = resolveTitle(
+        profile.totalPoints ?? 0,
+        profile.gender ?? 'female'
+      ).nameHebrew
+    }
+
     return {
-      userProfile: migratedProfile,
+      userProfile: profile,
       scores: JSON.parse(localStorage.getItem(STORAGE_KEYS.scores) ?? '{}'),
       activeSession: JSON.parse(localStorage.getItem(STORAGE_KEYS.session) ?? 'null'),
       weeklyData: JSON.parse(localStorage.getItem(STORAGE_KEYS.daily) ?? '[]'),
