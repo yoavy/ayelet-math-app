@@ -31,12 +31,19 @@ export function GamePage() {
   const topic = TOPICS.find(t => t.id === topicId)
   const level = topic?.levels.find(l => l.levelNumber === Number(levelNumber))
 
-  // Initialize session
+  // Initialize session and reset all local phase state when level changes.
+  // Critical for "next stage" navigation: the component stays mounted (same
+  // route pattern), so phase/lastResult would otherwise carry over from the
+  // previous level's complete screen and show "כמעט!" against the fresh session.
   useEffect(() => {
     if (!level) return
-    if (!session || session.levelId !== level.id) {
-      startSession(level)
-    }
+    startSession(level)
+    setPhase('playing')
+    setLastResult(null)
+    setInputValue('')
+    setShowHint(false)
+    setHintsUsed(0)
+    setShowConfetti(false)
   }, [level?.id])
 
   // Timer
